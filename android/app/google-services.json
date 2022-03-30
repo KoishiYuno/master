@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "771443041837",
+    "project_id": "smart-elderly-care",
+    "storage_bucket": "smart-elderly-care.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:771443041837:android:3fa8e4cfb60649739a3aa4",
+        "android_client_info": {
+          "package_name": "com.android.application"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "771443041837-5jat5o17cb26t62hmhfsp6vco8fh7gkp.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAMX70XiOANYtgV-PIzy6w811MpgBZmuk0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "771443041837-5jat5o17cb26t62hmhfsp6vco8fh7gkp.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
