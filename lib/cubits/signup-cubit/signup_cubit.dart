@@ -6,7 +6,35 @@ part 'signup_state.dart';
 
 class SignupCubit extends Cubit<SignupState> {
   final AuthRepository _authRepository;
-  SignupCubit({required AuthRepository authRepository})
-      : _authRepository = authRepository,
-        super(SignupInitial());
+  SignupCubit(this._authRepository) : super(SignupState.initial());
+
+  void emailChanged(String email) {
+    emit(state.copywith(
+      email: email,
+      status: SignupStatus.initial,
+    ));
+  }
+
+  void passwordChanged(String password) {
+    emit(state.copywith(
+      password: password,
+      status: SignupStatus.initial,
+    ));
+  }
+
+  Future<void> signupFormSubmitted() async {
+    if (state.status == SignupStatus.submitting) return;
+    emit(state.copywith(status: SignupStatus.submitting));
+    try {
+      await _authRepository
+          .signUp(email: state.email, password: state.password)
+          .then((value) => null);
+      emit(state.copywith(status: SignupStatus.success));
+    } catch (e) {
+      emit(state.copywith(
+        error: e.toString(),
+        status: SignupStatus.error,
+      ));
+    }
+  }
 }

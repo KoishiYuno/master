@@ -4,10 +4,16 @@ import 'package:master/cubits/login-cubit/login_cubit.dart';
 import 'package:master/repository/auth_repository.dart';
 import 'package:master/screens/signup_screen.dart';
 
+import '../bloc/auth-bloc/auth_bloc.dart';
+
 class LoginScreen extends StatefulWidget {
   const LoginScreen({Key? key}) : super(key: key);
 
   static Page page() => const MaterialPage<void>(child: LoginScreen());
+
+  static Route route() {
+    return MaterialPageRoute<void>(builder: (_) => const LoginScreen());
+  }
 
   @override
   State<LoginScreen> createState() => _LoginScreenState();
@@ -15,26 +21,18 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-  final TextEditingController _emailController = TextEditingController();
-  final TextEditingController _passwordController = TextEditingController();
-
-  @override
-  void dispose() {
-    _emailController.dispose();
-    _passwordController.dispose();
-    super.dispose();
-  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Login')),
+      appBar: AppBar(
+        title: const Text('Login'),
+        automaticallyImplyLeading: false,
+      ),
       body: Padding(
         padding: const EdgeInsets.all(20.0),
-        child: BlocProvider(
-          create: (_) => LoginCubit(
-            authRepository: context.read<AuthRepository>(),
-          ),
+        child: BlocProvider<LoginCubit>(
+          create: (_) => LoginCubit(context.read<AuthRepository>()),
           child: BlocListener<LoginCubit, LoginState>(
             listener: (context, state) {
               if (state.status == LoginStatus.error) {
@@ -70,6 +68,8 @@ class _LoginForm extends StatelessWidget {
           _LoginButton(
             formKey: _formKey,
           ),
+          const SizedBox(height: 8),
+          const _GoogleLoginButton(),
           const SizedBox(height: 8),
           _SignupButton(),
         ],
@@ -152,7 +152,7 @@ class _LoginButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<LoginCubit, LoginState>(
-      buildWhen: (previous, current) => previous.password != current.password,
+      buildWhen: (previous, current) => previous.status != current.status,
       builder: (context, state) {
         return state.status == LoginStatus.submitting
             ? const CircularProgressIndicator()
@@ -167,6 +167,30 @@ class _LoginButton extends StatelessWidget {
                   }
                 },
                 child: const Text('Login'),
+              );
+      },
+    );
+  }
+}
+
+class _GoogleLoginButton extends StatelessWidget {
+  const _GoogleLoginButton({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocBuilder<LoginCubit, LoginState>(
+      buildWhen: (previous, current) => previous.status != current.status,
+      builder: (context, state) {
+        return state.status == LoginStatus.submitting
+            ? Container()
+            : ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  fixedSize: const Size(200, 40),
+                ),
+                onPressed: () {
+                  context.read<LoginCubit>().loginWithGoogle();
+                },
+                child: const Text('Login by Google'),
               );
       },
     );

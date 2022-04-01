@@ -21,6 +21,10 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         ) {
     on<UserChanged>(_onUserChanged);
     on<LogoutRequested>(_onLogoutRequested);
+
+    _userSubscription = _authRepository.user.listen(
+      (user) => add(UserChanged(user)),
+    );
   }
 
   void _onUserChanged(
@@ -39,5 +43,10 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     Emitter<AuthState> emit,
   ) {
     unawaited(_authRepository.signOut());
+  }
+
+  Future<void> close() async {
+    _userSubscription?.cancel();
+    return super.close();
   }
 }

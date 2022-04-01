@@ -25,7 +25,7 @@ class LoginState extends Equatable {
   }
 
   @override
-  List<Object> get props => [email, password, status];
+  List<Object> get props => [email, password, error, status];
 
   LoginState copywith({
     String? email,

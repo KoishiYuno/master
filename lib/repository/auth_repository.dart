@@ -26,7 +26,7 @@ class AuthRepository {
     required String password,
   }) async {
     try {
-      await firebase_auth.FirebaseAuth.instance.createUserWithEmailAndPassword(
+      await _firebaseAuth.createUserWithEmailAndPassword(
         email: email,
         password: password,
       );
@@ -53,7 +53,7 @@ class AuthRepository {
     required String password,
   }) async {
     try {
-      await firebase_auth.FirebaseAuth.instance.signInWithEmailAndPassword(
+      await _firebaseAuth.signInWithEmailAndPassword(
         email: email,
         password: password,
       );
@@ -86,8 +86,7 @@ class AuthRepository {
         idToken: googleAuth?.idToken,
       );
 
-      await firebase_auth.FirebaseAuth.instance
-          .signInWithCredential(credential);
+      await _firebaseAuth.signInWithCredential(credential);
     } catch (e) {
       throw Exception(e.toString());
     }
