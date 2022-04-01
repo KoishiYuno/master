@@ -1,19 +1,36 @@
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_auth/firebase_auth.dart' as firebase_auth;
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:master/model/user.dart';
 
 class AuthRepository {
-  final _firebaseAuth = FirebaseAuth.instance;
+  final firebase_auth.FirebaseAuth _firebaseAuth;
 
+  AuthRepository({firebase_auth.FirebaseAuth? firebaseAuth})
+      : _firebaseAuth = firebaseAuth ?? firebase_auth.FirebaseAuth.instance;
+
+  var currentUser = User.empty;
+
+  // Get current user, return empty user if not login
+  Stream<User> get user {
+    return _firebaseAuth.authStateChanges().map((firebaseUser) {
+      final user = firebaseUser == null ? User.empty : firebaseUser.toUser;
+      currentUser = user;
+
+      return user;
+    });
+  }
+
+  // Sign up method
   Future<void> signUp({
     required String email,
     required String password,
   }) async {
     try {
-      await FirebaseAuth.instance.createUserWithEmailAndPassword(
+      await firebase_auth.FirebaseAuth.instance.createUserWithEmailAndPassword(
         email: email,
         password: password,
       );
-    } on FirebaseAuthException catch (e) {
+    } on firebase_auth.FirebaseAuthException catch (e) {
       if (e.code == 'weak-password') {
         throw Exception('The password provided is too weak.');
       } else if (e.code == 'email-already-in-use') {
@@ -30,16 +47,17 @@ class AuthRepository {
     }
   }
 
-  Future<void> logIn({
+  // Log in method using email and password
+  Future<void> logInWithEmailAndPassword({
     required String email,
     required String password,
   }) async {
     try {
-      await FirebaseAuth.instance.signInWithEmailAndPassword(
+      await firebase_auth.FirebaseAuth.instance.signInWithEmailAndPassword(
         email: email,
         password: password,
       );
-    } on FirebaseAuthException catch (e) {
+    } on firebase_auth.FirebaseAuthException catch (e) {
       if (e.code == 'invalid-email') {
         throw Exception('Email is not valid or badly formatted.');
       } else if (e.code == 'user-disabled') {
@@ -63,12 +81,13 @@ class AuthRepository {
       final GoogleSignInAuthentication? googleAuth =
           await googleUser?.authentication;
 
-      final credential = GoogleAuthProvider.credential(
+      final credential = firebase_auth.GoogleAuthProvider.credential(
         accessToken: googleAuth?.accessToken,
         idToken: googleAuth?.idToken,
       );
 
-      await FirebaseAuth.instance.signInWithCredential(credential);
+      await firebase_auth.FirebaseAuth.instance
+          .signInWithCredential(credential);
     } catch (e) {
       throw Exception(e.toString());
     }
@@ -76,9 +95,16 @@ class AuthRepository {
 
   Future<void> signOut() async {
     try {
-      await _firebaseAuth.signOut();
+      await Future.wait([_firebaseAuth.signOut()]);
     } catch (e) {
       throw Exception(e);
     }
+  }
+}
+
+// Add get method for User object in FirebaseAuth package
+extension on firebase_auth.User {
+  User get toUser {
+    return User(id: uid, email: email, userName: displayName);
   }
 }
