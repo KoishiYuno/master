@@ -3,6 +3,7 @@ import 'package:flow_builder/flow_builder.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:master/bloc/auth-bloc/auth_bloc.dart';
+import 'package:master/config/theme.dart';
 import 'package:master/repository/auth_repository.dart';
 
 import 'config/routes.dart';
@@ -40,6 +41,7 @@ class AppView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      theme: theme,
       home: FlowBuilder(
           state: context.select((AuthBloc bloc) => bloc.state.status),
           onGeneratePages: onGenerateAppViewPages),

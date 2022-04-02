@@ -27,8 +27,6 @@ class LoginCubit extends Cubit<LoginState> {
     if (state.status == LoginStatus.submitting) return;
     emit(state.copywith(status: LoginStatus.submitting));
 
-    print('state is ${state.status}');
-
     try {
       await _authRepository.logInWithEmailAndPassword(
           email: state.email, password: state.password);

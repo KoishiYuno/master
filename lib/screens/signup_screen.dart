@@ -1,6 +1,7 @@
+import 'dart:ffi';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:master/bloc/auth-bloc/auth_bloc.dart';
 
 import '../cubits/signup-cubit/signup_cubit.dart';
 import '../repository/auth_repository.dart';
@@ -56,19 +57,29 @@ class _SignupForm extends StatelessWidget {
   Widget build(BuildContext context) {
     return Form(
       key: _signupFormKey,
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: <Widget>[
-          _EmailInput(),
-          const SizedBox(height: 8),
-          _PasswordInput(),
-          const SizedBox(height: 8),
-          _SignupButton(
-            signupFormKey: _signupFormKey,
+      child: Align(
+        alignment: const Alignment(0, -1 / 2),
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              Image.asset(
+                'assets/logo.png',
+                height: 120,
+              ),
+              const SizedBox(height: 20),
+              _EmailInput(),
+              const SizedBox(height: 8),
+              _PasswordInput(),
+              const SizedBox(height: 8),
+              _SignupButton(
+                signupFormKey: _signupFormKey,
+              ),
+              const SizedBox(height: 8),
+              // _LoginButton(),
+            ],
           ),
-          const SizedBox(height: 8),
-          // _LoginButton(),
-        ],
+        ),
       ),
     );
   }
@@ -83,7 +94,7 @@ class _EmailInput extends StatelessWidget {
         return TextFormField(
           keyboardType: TextInputType.emailAddress,
           decoration: const InputDecoration(
-            hintText: "Email",
+            labelText: "Email",
             border: OutlineInputBorder(),
           ),
           autovalidateMode: AutovalidateMode.onUserInteraction,
@@ -116,7 +127,7 @@ class _PasswordInput extends StatelessWidget {
         return TextFormField(
           obscureText: true,
           decoration: const InputDecoration(
-            hintText: "Password",
+            labelText: "Password",
             border: OutlineInputBorder(),
           ),
           autovalidateMode: AutovalidateMode.onUserInteraction,
@@ -154,7 +165,11 @@ class _SignupButton extends StatelessWidget {
             ? const CircularProgressIndicator()
             : ElevatedButton(
                 style: ElevatedButton.styleFrom(
-                  fixedSize: const Size(200, 40),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(30),
+                  ),
+                  fixedSize: const Size(120, 40),
+                  primary: const Color.fromARGB(255, 76, 0, 255),
                 ),
                 onPressed: () {
                   final isValid = _signupFormKey.currentState!.validate();
