@@ -1,7 +1,8 @@
-import 'dart:ffi';
+// ignore_for_file: prefer_typing_uninitialized_variables
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:master/repository/data_repository.dart';
 
 import '../cubits/signup-cubit/signup_cubit.dart';
 import '../repository/auth_repository.dart';
@@ -29,7 +30,8 @@ class _SignupScreenState extends State<SignupScreen> {
       body: Padding(
         padding: const EdgeInsets.all(20.0),
         child: BlocProvider<SignupCubit>(
-          create: (_) => SignupCubit(context.read<AuthRepository>()),
+          create: (_) => SignupCubit(
+              context.read<AuthRepository>(), context.read<DataRepository>()),
           child: BlocListener<SignupCubit, SignupState>(
             listener: (context, state) {
               if (state.status == SignupStatus.error) {
@@ -49,6 +51,7 @@ class _SignupScreenState extends State<SignupScreen> {
 
 class _SignupForm extends StatelessWidget {
   final GlobalKey<FormState> _signupFormKey;
+
   const _SignupForm({required GlobalKey<FormState> signupFormKey, Key? key})
       : _signupFormKey = signupFormKey,
         super(key: key);
@@ -58,7 +61,7 @@ class _SignupForm extends StatelessWidget {
     return Form(
       key: _signupFormKey,
       child: Align(
-        alignment: const Alignment(0, -1 / 2),
+        alignment: const Alignment(0, -1 / 1),
         child: SingleChildScrollView(
           child: Column(
             mainAxisSize: MainAxisSize.min,
@@ -72,11 +75,15 @@ class _SignupForm extends StatelessWidget {
               const SizedBox(height: 8),
               _PasswordInput(),
               const SizedBox(height: 8),
+              _UsernameInput(),
+              const SizedBox(height: 8),
+              _UserTypeInput(),
+              const SizedBox(height: 8),
               _SignupButton(
                 signupFormKey: _signupFormKey,
               ),
               const SizedBox(height: 8),
-              // _LoginButton(),
+              _BackToLoginButton(),
             ],
           ),
         ),
@@ -149,6 +156,75 @@ class _PasswordInput extends StatelessWidget {
   }
 }
 
+class _UsernameInput extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return BlocBuilder<SignupCubit, SignupState>(
+      buildWhen: (previous, current) => previous.password != current.password,
+      builder: (context, state) {
+        return TextFormField(
+          decoration: const InputDecoration(
+            labelText: "Username",
+            border: OutlineInputBorder(),
+          ),
+          autovalidateMode: AutovalidateMode.onUserInteraction,
+          validator: (value) {
+            if (value.toString().isEmpty) {
+              return 'Username cannot be empty.';
+            } else if (!RegExp(r'^[a-z]+$')
+                .hasMatch(value.toString().toLowerCase())) {
+              return 'A valid username can only contains alphabets';
+            } else {
+              return null;
+            }
+          },
+          onChanged: (username) {
+            context.read<SignupCubit>().usernameChanged(username);
+          },
+        );
+      },
+    );
+  }
+}
+
+class _UserTypeInput extends StatefulWidget {
+  @override
+  State<_UserTypeInput> createState() => _UserTypeInputState();
+}
+
+class _UserTypeInputState extends State<_UserTypeInput> {
+  final List<String> _userTypes = ['Elderly', 'Dependant', 'Caregivers'];
+  var _selectedUserType;
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocBuilder<SignupCubit, SignupState>(
+      builder: (context, state) {
+        return DropdownButtonFormField<String>(
+          validator: (value) => value == null ? 'Field required' : null,
+          isExpanded: true,
+          hint: const Text("Please Choose A User Type"),
+          value: _selectedUserType,
+          items: _userTypes.map((String userType) {
+            return DropdownMenuItem<String>(
+              child: Text(userType),
+              value: userType,
+            );
+          }).toList(),
+          onChanged: (userType) {
+            setState(() {
+              _selectedUserType = userType;
+              context
+                  .read<SignupCubit>()
+                  .userTypeChanged(_selectedUserType.toString());
+            });
+          },
+        );
+      },
+    );
+  }
+}
+
 class _SignupButton extends StatelessWidget {
   final GlobalKey<FormState> _signupFormKey;
 
@@ -184,19 +260,16 @@ class _SignupButton extends StatelessWidget {
   }
 }
 
-// class _LoginButton extends StatelessWidget {
-//   @override
-//   Widget build(BuildContext context) {
-//     return ElevatedButton(
-//       style: ElevatedButton.styleFrom(
-//         primary: Colors.white,
-//         fixedSize: const Size(200, 40),
-//       ),
-//       onPressed: () => Navigator.of(context).push<void>(LoginScreen.route()),
-//       child: const Text(
-//         'Login',
-//         style: TextStyle(color: Colors.blue),
-//       ),
-//     );
-//   }
-// }
+class _BackToLoginButton extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return TextButton(
+      onPressed: () => Navigator.pop(context),
+      child: Text(
+        'Already Have An Account? Sign Up',
+        style: TextStyle(color: theme.primaryColor),
+      ),
+    );
+  }
+}

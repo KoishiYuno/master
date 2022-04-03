@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 import '../bloc/auth-bloc/auth_bloc.dart';
 
@@ -25,6 +26,27 @@ class HomeScreen extends StatelessWidget {
             icon: const Icon(Icons.exit_to_app),
           ),
         ],
+      ),
+      body: FutureBuilder(
+        future: null,
+        builder:
+            (BuildContext context, AsyncSnapshot<DocumentSnapshot> snapshot) {
+          if (snapshot.hasError) {
+            return const Text("Something went wrong");
+          }
+
+          if (snapshot.hasData && !snapshot.data!.exists) {
+            return const Text("Document does not exist");
+          }
+
+          if (snapshot.connectionState == ConnectionState.done) {
+            Map<String, dynamic> data =
+                snapshot.data!.data() as Map<String, dynamic>;
+            return Text("Full Name: ${data['full_name']} ${data['last_name']}");
+          }
+
+          return const Center(child: CircularProgressIndicator());
+        },
       ),
     );
   }
