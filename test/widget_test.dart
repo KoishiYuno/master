@@ -11,14 +11,17 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:master/main.dart';
 import 'package:master/repository/auth_repository.dart';
 import 'package:master/repository/data_repository.dart';
+import 'package:master/repository/fitbit_repository.dart';
 
 void main() {
   testWidgets('Counter increments smoke test', (WidgetTester tester) async {
     // Build our app and trigger a frame.
     final AuthRepository authRepository = AuthRepository();
     final DataRepository dataRepository = DataRepository();
+    final FitbitRepository fitbitRepository = FitbitRepository();
 
     await tester.pumpWidget(MyApp(
+      fitbitRepository: fitbitRepository,
       authRepository: authRepository,
       dataRepository: dataRepository,
     ));

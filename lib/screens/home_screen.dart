@@ -1,51 +1,58 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:master/bloc/home-bloc/home_bloc.dart';
+import 'package:master/repository/data_repository.dart';
+import 'package:master/repository/fitbit_repository.dart';
+import 'package:master/screens/home/fitbit_authorization.dart';
+import 'package:master/screens/home/home_main.dart';
 
-import '../bloc/auth-bloc/auth_bloc.dart';
+import '../repository/auth_repository.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({Key? key}) : super(key: key);
 
+  static const String routeName = '/';
+
   static Page page() => const MaterialPage<void>(child: HomeScreen());
 
   static Route route() {
-    return MaterialPageRoute<void>(builder: (_) => const HomeScreen());
+    return MaterialPageRoute<void>(
+        settings: const RouteSettings(name: routeName),
+        builder: (_) => const HomeScreen());
   }
 
   @override
   Widget build(BuildContext context) {
+    return BlocProvider(
+      create: (context) => HomeBloc(
+        authRepository: context.read<AuthRepository>(),
+        dataRepository: context.read<DataRepository>(),
+        fitbitRepository: context.read<FitbitRepository>(),
+      )..add(CheckFitbitAccessToken()),
+      child: const _HomeView(),
+    );
+  }
+}
+
+class _HomeView extends StatelessWidget {
+  const _HomeView({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Home'),
-        actions: [
-          IconButton(
-            onPressed: () {
-              context.read<AuthBloc>().add(LogoutRequested());
-            },
-            icon: const Icon(Icons.exit_to_app),
-          ),
-        ],
-      ),
-      body: FutureBuilder(
-        future: null,
-        builder:
-            (BuildContext context, AsyncSnapshot<DocumentSnapshot> snapshot) {
-          if (snapshot.hasError) {
-            return const Text("Something went wrong");
+      body: BlocBuilder<HomeBloc, HomeState>(
+        builder: (context, state) {
+          if (state is FitbitAcessTokenExisted ||
+              state is FitbitAuthorizationFailed ||
+              state is HealthDataUpdated) {
+            return const HomeMainPage();
+          } else if (state is FitbitAcessTokenMissed) {
+            return const FitbitAuthorization();
+          } else if (state is HomeError) {
+            return Text(state.error);
+          } else {
+            return const Center(child: CircularProgressIndicator());
           }
-
-          if (snapshot.hasData && !snapshot.data!.exists) {
-            return const Text("Document does not exist");
-          }
-
-          if (snapshot.connectionState == ConnectionState.done) {
-            Map<String, dynamic> data =
-                snapshot.data!.data() as Map<String, dynamic>;
-            return Text("Full Name: ${data['full_name']} ${data['last_name']}");
-          }
-
-          return const Center(child: CircularProgressIndicator());
         },
       ),
     );

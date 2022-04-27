@@ -4,6 +4,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../cubits/signup-cubit/signup_cubit.dart';
 
 class UsernameInput extends StatelessWidget {
+  const UsernameInput({Key? key}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<SignupCubit, SignupState>(

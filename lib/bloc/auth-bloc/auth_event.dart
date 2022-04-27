@@ -17,3 +17,11 @@ class UserChanged extends AuthEvent {
   @override
   List<Object> get props => [];
 }
+
+class HomeNavigationequested extends AuthEvent {}
+
+class ChatNavigationequested extends AuthEvent {}
+
+class ProfileNavigationequested extends AuthEvent {}
+
+class MenuNavigationequested extends AuthEvent {}

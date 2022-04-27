@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:master/cubits/login-cubit/login_cubit.dart';
 import 'package:master/repository/auth_repository.dart';
+import 'package:master/repository/data_repository.dart';
 
 import '../widgets/login-widgets/view.dart';
 
@@ -31,7 +32,10 @@ class _LoginScreenState extends State<LoginScreen> {
       body: Padding(
         padding: const EdgeInsets.all(20.0),
         child: BlocProvider<LoginCubit>(
-          create: (_) => LoginCubit(context.read<AuthRepository>()),
+          create: (_) => LoginCubit(
+            context.read<AuthRepository>(),
+            context.read<DataRepository>(),
+          ),
           child: BlocListener<LoginCubit, LoginState>(
             listener: (context, state) {
               if (state.status == LoginStatus.error) {
@@ -68,9 +72,9 @@ class _LoginForm extends StatelessWidget {
                 height: 120,
               ),
               const SizedBox(height: 30),
-              EmailInput(),
+              const EmailInput(),
               const SizedBox(height: 8),
-              PasswordInput(),
+              const PasswordInput(),
               const SizedBox(height: 20),
               LoginButton(
                 formKey: _formKey,
@@ -78,7 +82,7 @@ class _LoginForm extends StatelessWidget {
               const SizedBox(height: 8),
               const GoogleLoginButton(),
               const SizedBox(height: 8),
-              SignupButton(),
+              const SignupButton(),
             ],
           ),
         ),

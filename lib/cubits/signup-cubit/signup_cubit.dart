@@ -50,7 +50,9 @@ class SignupCubit extends Cubit<SignupState> {
           .then((value) => null);
       if (state.userType == 'Elderly') {
         await _dataRepository.createNewUser(
-            id: _authRepository.currentUser.id, username: state.username);
+            id: _authRepository.currentUser.id,
+            username: state.username,
+            userType: state.userType);
       }
       emit(state.copywith(status: SignupStatus.success));
     } catch (e) {

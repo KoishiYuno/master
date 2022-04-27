@@ -4,6 +4,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../cubits/signup-cubit/signup_cubit.dart';
 
 class UserTypeInput extends StatefulWidget {
+  const UserTypeInput({Key? key}) : super(key: key);
+
   @override
   State<UserTypeInput> createState() => _UserTypeInputState();
 }

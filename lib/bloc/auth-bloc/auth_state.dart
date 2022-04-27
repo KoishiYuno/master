@@ -1,6 +1,6 @@
 part of 'auth_bloc.dart';
 
-enum AuthStatus { authenticated, unauthenticated }
+enum AuthStatus { authenticated, unauthenticated, home, profile, chat, menu }
 
 class AuthState extends Equatable {
   final AuthStatus status;
@@ -22,6 +22,26 @@ class AuthState extends Equatable {
       : this._(
           status: AuthStatus.unauthenticated,
           user: User.empty,
+        );
+
+  const AuthState.home()
+      : this._(
+          status: AuthStatus.home,
+        );
+
+  const AuthState.profile()
+      : this._(
+          status: AuthStatus.profile,
+        );
+
+  const AuthState.chat()
+      : this._(
+          status: AuthStatus.chat,
+        );
+
+  const AuthState.menu()
+      : this._(
+          status: AuthStatus.menu,
         );
 
   @override
