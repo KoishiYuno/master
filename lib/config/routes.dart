@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:master/bloc/auth-bloc/auth_bloc.dart';
 import 'package:master/screens/chat_screen.dart';
-import 'package:master/screens/home_screen.dart';
+import 'package:master/screens/home/home_screen.dart';
 import 'package:master/screens/login_screen.dart';
+import 'package:master/screens/profile_screen.dart';
 import 'package:master/screens/splash_screen.dart';
 
 List<Page> onGenerateAppViewPages(
@@ -18,7 +19,7 @@ List<Page> onGenerateAppViewPages(
     case AuthStatus.home:
       return [HomeScreen.page()];
     case AuthStatus.profile:
-      return [SplashScreen.page()];
+      return [ProfileScreen.page()];
     case AuthStatus.chat:
       return [ChatScreen.page()];
     case AuthStatus.menu:

@@ -9,6 +9,8 @@ class LoginCubit extends Cubit<LoginState> {
   final AuthRepository _authRepository;
   final DataRepository _dataRepository;
 
+  var _isDisposed = false;
+
   LoginCubit(
     this._authRepository,
     this._dataRepository,
@@ -29,6 +31,7 @@ class LoginCubit extends Cubit<LoginState> {
   }
 
   Future<void> loginWithCredentials() async {
+    if (_isDisposed) return;
     if (state.status == LoginStatus.submitting) return;
     emit(state.copywith(status: LoginStatus.submitting));
 
@@ -41,12 +44,14 @@ class LoginCubit extends Cubit<LoginState> {
             userid: _authRepository.currentUser.id);
       }
 
-      emit(state.copywith(status: LoginStatus.success));
+      // emit(state.copywith(status: LoginStatus.success));
     } catch (e) {
-      emit(state.copywith(
-        error: e.toString(),
-        status: LoginStatus.error,
-      ));
+      if (!_isDisposed) {
+        emit(state.copywith(
+          error: e.toString(),
+          status: LoginStatus.error,
+        ));
+      }
     }
   }
 
@@ -63,5 +68,9 @@ class LoginCubit extends Cubit<LoginState> {
         status: LoginStatus.error,
       ));
     }
+  }
+
+  void dispose() {
+    _isDisposed = true;
   }
 }

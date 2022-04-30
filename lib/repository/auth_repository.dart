@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart' as firebase_auth;
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:master/model/user.dart';
+import 'package:master/repository/data_repository.dart';
 
 class AuthRepository {
   final firebase_auth.FirebaseAuth _firebaseAuth;
@@ -9,6 +10,7 @@ class AuthRepository {
       : _firebaseAuth = firebaseAuth ?? firebase_auth.FirebaseAuth.instance;
 
   var currentUser = User.empty;
+  var targetId = '';
 
   // Get current user, return empty user if not login
   Stream<User> get user {

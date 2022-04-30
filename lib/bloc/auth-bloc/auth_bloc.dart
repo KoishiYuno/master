@@ -14,10 +14,10 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   final DataRepository _dataRepository;
   StreamSubscription<User>? _userSubscription;
 
-  AuthBloc(
-      {required AuthRepository authRepository,
-      required DataRepository dataRepository})
-      : _authRepository = authRepository,
+  AuthBloc({
+    required AuthRepository authRepository,
+    required DataRepository dataRepository,
+  })  : _authRepository = authRepository,
         _dataRepository = dataRepository,
         super(
           authRepository.currentUser.isNotEmpty

@@ -47,3 +47,7 @@ class FitbitAuthorizationFailed extends HomeState {
 }
 
 class HealthDataUpdated extends HomeState {}
+
+class ElderlyAccountLinked extends HomeState {}
+
+class ElderlyAccountMissed extends HomeState {}

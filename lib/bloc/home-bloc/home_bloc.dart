@@ -41,10 +41,21 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       final data = await _dataRepository.getElderlyDetail(
           userid: _authRepository.currentUser.id);
 
-      if (data.data()!.containsKey('access_token')) {
-        emit(FitbitAcessTokenExisted());
-      } else {
-        emit(FitbitAcessTokenMissed());
+      if (data.data()!['userType'] == 'Elderly') {
+        if (data.data()!.containsKey('access_token')) {
+          emit(FitbitAcessTokenExisted());
+        } else {
+          emit(FitbitAcessTokenMissed());
+        }
+      }
+
+      if (data.data()!['userType'] == 'Caregivers' ||
+          data.data()!['userType'] == 'Dependant') {
+        if (data.data()!.containsKey('elderly')) {
+          emit(ElderlyAccountLinked());
+        } else {
+          emit(ElderlyAccountMissed());
+        }
       }
     } catch (e) {
       emit(FitbitAuthorizationFailed(error: e.toString()));

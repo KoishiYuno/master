@@ -50,6 +50,7 @@ dependencies:
   syncfusion_flutter_charts: ^20.1.50
   firebase_messaging: ^11.2.14
   flutter_local_notifications: ^9.4.1
+  pin_code_fields: ^7.4.0
 
 dev_dependencies:
   flutter_test:

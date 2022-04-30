@@ -21,7 +21,7 @@ class _FitbitAuthorizationState extends State<FitbitAuthorization> {
       builder: (context, state) {
         return Scaffold(
           appBar: AppBar(
-            title: const Text('Home Page'),
+            title: const Text('Login to Fitbit'),
             automaticallyImplyLeading: false,
             actions: <Widget>[
               IconButton(

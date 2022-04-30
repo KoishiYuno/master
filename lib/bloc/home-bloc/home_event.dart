@@ -38,3 +38,12 @@ class RequestAccessCredentialsByAuthorizationToken extends HomeEvent {
 }
 
 class UpdateHealthData extends HomeEvent {}
+
+class LinkElderly extends HomeEvent {
+  final String code;
+
+  const LinkElderly(this.code);
+
+  @override
+  List<Object> get props => [code];
+}

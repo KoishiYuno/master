@@ -1,14 +1,16 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:master/widgets/bottom_nav_bar.dart';
-import 'package:intl/intl.dart';
+
+import '../cubits/chat-cubit/chat_cubit.dart';
+import '../repository/auth_repository.dart';
+import '../repository/data_repository.dart';
+import '../widgets/chat-widgets/view.dart';
 
 class ChatScreen extends StatelessWidget {
-  final FirebaseFirestore _firebaseFirestore = FirebaseFirestore.instance;
-  ChatScreen({Key? key}) : super(key: key);
+  const ChatScreen({Key? key}) : super(key: key);
 
-  static Page page() => MaterialPage<void>(child: ChatScreen());
+  static Page page() => const MaterialPage<void>(child: ChatScreen());
 
   @override
   Widget build(BuildContext context) {
@@ -17,51 +19,38 @@ class ChatScreen extends StatelessWidget {
         title: const Text('Chat'),
         automaticallyImplyLeading: false,
       ),
-      body: StreamBuilder(
-        stream: _firebaseFirestore
-            .collection('users')
-            .doc(FirebaseAuth.instance.currentUser!.uid)
-            .collection('messages')
-            .orderBy('date', descending: true)
-            .snapshots(),
-        builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
-          if (snapshot.hasError) {
-            return const Text("Something went wrong");
-          }
-
-          if (snapshot.connectionState == ConnectionState.active) {
-            final data = snapshot.data.docs;
-            return ListView.builder(
-              reverse: true,
-              itemCount: data.length,
-              itemBuilder: (context, index) {
-                return Column(
-                  children: const <Widget>[
-                    Expanded(
-                      child: Text('Not implemented yet'),
-                    ),
-                  ],
-                );
-              },
-            );
-          }
-
-          return const Center(
-            child: CircularProgressIndicator(),
-          );
-        },
+      body: BlocProvider<ChatCubit>(
+        create: (_) => ChatCubit(
+          context.read<DataRepository>(),
+          context.read<AuthRepository>(),
+        ),
+        child: BlocListener<ChatCubit, ChatState>(
+          listener: (context, state) {
+            if (state.status == ChatStatus.error) {
+              ScaffoldMessenger.of(context)
+                  .showSnackBar(SnackBar(content: Text(state.error)));
+            }
+          },
+          child: _ChatView(),
+        ),
       ),
       bottomNavigationBar: const CustomBottomNavBar(),
     );
   }
 }
 
-// MessageBubble(
-//                       message: data[index]['message'],
-//                       date: DateFormat('dd/MM/yyyy, HH:mm')
-//                           .format(data[index]['date'].toDate()),
-//                       isMe: data[index]['userID'] ==
-//                           FirebaseAuth.instance.currentUser!.uid,
-//                       id: data[index].id,
-//                       username: data[index].username,
-//                     ),
+class _ChatView extends StatelessWidget {
+  const _ChatView({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: <Widget>[
+        Expanded(
+          child: Message(),
+        ),
+        NewMessage(),
+      ],
+    );
+  }
+}

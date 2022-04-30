@@ -21,18 +21,37 @@ class ChatCubit extends Cubit<ChatState> {
     ));
   }
 
+  Future<void> checkdocID() async {
+    final response = await _dataRepository.getElderlyDetail(
+        userid: _authRepository.currentUser.id);
+
+    String docID = response.data()!.containsKey('elderly')
+        ? response.data()!['elderly']
+        : _authRepository.currentUser.id;
+
+    emit(state.copywith(
+      docID: docID,
+      username: response.data()!['username'],
+      status: ChatStatus.initial,
+    ));
+  }
+
   Future<void> submitNewMessage() async {
     if (state.status == ChatStatus.submitting) return;
     emit(state.copywith(status: ChatStatus.submitting));
 
     try {
-      final response = await _dataRepository.getElderlyDetail(
-          userid: _authRepository.currentUser.id);
+      if (state.docID == '') {
+        await checkdocID();
+      }
+
+      print(state);
 
       await _dataRepository.createNewMessage(
           message: state.message,
           id: _authRepository.currentUser.id,
-          username: response.data()!['username']);
+          username: state.username,
+          docID: state.docID);
 
       emit(state.copywith(status: ChatStatus.success));
     } catch (e) {

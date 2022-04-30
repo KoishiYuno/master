@@ -5,8 +5,9 @@ import 'package:master/repository/data_repository.dart';
 import 'package:master/repository/fitbit_repository.dart';
 import 'package:master/screens/home/fitbit_authorization.dart';
 import 'package:master/screens/home/home_main.dart';
+import 'package:master/screens/home/link_elderly_account.dart';
 
-import '../repository/auth_repository.dart';
+import '../../repository/auth_repository.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -43,14 +44,19 @@ class _HomeView extends StatelessWidget {
       body: BlocBuilder<HomeBloc, HomeState>(
         builder: (context, state) {
           if (state is FitbitAcessTokenExisted ||
-              state is FitbitAuthorizationFailed ||
-              state is HealthDataUpdated) {
+              state is HealthDataUpdated ||
+              state is ElderlyAccountLinked) {
             return const HomeMainPage();
           } else if (state is FitbitAcessTokenMissed) {
             return const FitbitAuthorization();
+          } else if (state is ElderlyAccountMissed) {
+            return LinkElderlyAccount();
+          } else if (state is FitbitAuthorizationFailed) {
+            return Text('error is ' + state.error);
           } else if (state is HomeError) {
             return Text(state.error);
           } else {
+            print(state);
             return const Center(child: CircularProgressIndicator());
           }
         },
