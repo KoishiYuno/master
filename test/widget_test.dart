@@ -10,20 +10,29 @@ import 'package:flutter_test/flutter_test.dart';
 
 import 'package:master/main.dart';
 import 'package:master/repository/auth_repository.dart';
-import 'package:master/repository/data_repository.dart';
+import 'package:master/repository/chat_repository.dart';
+import 'package:master/repository/home_repository.dart';
 import 'package:master/repository/fitbit_repository.dart';
+import 'package:master/repository/link_code_repository.dart';
+import 'package:master/repository/profile_repository.dart';
 
 void main() {
   testWidgets('Counter increments smoke test', (WidgetTester tester) async {
     // Build our app and trigger a frame.
     final AuthRepository authRepository = AuthRepository();
-    final DataRepository dataRepository = DataRepository();
+    final HomeRepository homeRepository = HomeRepository();
     final FitbitRepository fitbitRepository = FitbitRepository();
+    final ChatRepository chatRepository = ChatRepository();
+    final ProfileRepository profileRepository = ProfileRepository();
+    final LinkCodeRepository linkCodeRepository = LinkCodeRepository();
 
     await tester.pumpWidget(MyApp(
       fitbitRepository: fitbitRepository,
       authRepository: authRepository,
-      dataRepository: dataRepository,
+      homeRepository: homeRepository,
+      chatRepository: chatRepository,
+      profileRepository: profileRepository,
+      linkCodeRepository: linkCodeRepository,
     ));
 
     // Verify that our counter starts at 0.

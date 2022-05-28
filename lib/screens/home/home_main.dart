@@ -28,46 +28,57 @@ class _HomeMainPageState extends State<HomeMainPage> {
 
   @override
   Widget build(BuildContext context) {
+    print(context.read<AuthBloc>().state.targetID);
     print(date);
     return Scaffold(
       appBar: AppBar(
         title: const Text('Home Page'),
         automaticallyImplyLeading: false,
-        actions: <Widget>[
-          IconButton(
-            key: const Key('homePage_logout_iconButton'),
-            icon: const Icon(Icons.exit_to_app),
-            onPressed: () => context.read<AuthBloc>().add(LogoutRequested()),
-          )
-        ],
+        // actions: <Widget>[
+        //   IconButton(
+        //     key: const Key('homePage_logout_iconButton'),
+        //     icon: const Icon(Icons.exit_to_app),
+        //     onPressed: () => context.read<AuthBloc>().add(LogoutRequested()),
+        //   )
+        // ],
       ),
       body: Padding(
         padding: const EdgeInsets.all(8.0),
-        child: Column(children: [
-          SizedBox(
-            height: MediaQuery.of(context).size.height * 0.355,
-            child: HeartRateDiagram(
+        child: ListView(
+          children: [
+            SizedBox(
+              height: MediaQuery.of(context).size.height * 0.02,
+            ),
+            Image.asset(
+              'assets/heartBeat.png',
+              height: MediaQuery.of(context).size.height * 0.23,
+            ),
+            SizedBox(
+              height: MediaQuery.of(context).size.height * 0.2,
+              child: HeartRateDetail(
+                date: date,
+                current: current,
+              ),
+            ),
+            HeartRateDiagram(
               date: date,
               current: current,
             ),
-          ),
-          const SizedBox(
-            height: 20,
-          ),
-          SizedBox(
-            height: MediaQuery.of(context).size.height * 0.40,
-            child: SfDateRangePicker(
-              initialSelectedDate: current,
-              maxDate: current,
-              selectionMode: DateRangePickerSelectionMode.single,
-              onSelectionChanged: (DateRangePickerSelectionChangedArgs args) {
-                setState(() {
-                  date = f.format(args.value).toString();
-                });
-              },
+            SizedBox(
+              height: MediaQuery.of(context).size.height * 0.40,
+              child: SfDateRangePicker(
+                initialSelectedDate: current,
+                maxDate: current,
+                selectionMode: DateRangePickerSelectionMode.single,
+                onSelectionChanged: (DateRangePickerSelectionChangedArgs args) {
+                  setState(() {
+                    date = f.format(args.value).toString();
+                  });
+                },
+              ),
             ),
-          ),
-        ]),
+          ],
+        ),
       ),
       bottomNavigationBar: const CustomBottomNavBar(),
     );

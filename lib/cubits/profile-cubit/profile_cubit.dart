@@ -2,23 +2,22 @@ import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 
 import '../../repository/auth_repository.dart';
-import '../../repository/data_repository.dart';
+import '../../repository/profile_repository.dart';
 
 part 'profile_state.dart';
 
 class ProfileCubit extends Cubit<ProfileState> {
-  final DataRepository _dataRepository;
+  final ProfileRepository _profileRepository;
   final AuthRepository _authRepository;
 
   ProfileCubit(
-    this._dataRepository,
+    this._profileRepository,
     this._authRepository,
   ) : super(ProfileState.initial());
 
   void setIntial(Map<String, dynamic> data) {
-    print(111111);
     emit(state.copywith(
-      username: data.containsKey('username') ? data['username'] : '',
+      duration: data.containsKey('duration') ? data['duration'] : '',
       height: data.containsKey('height') ? data['height'] : '',
       weight: data.containsKey('weight') ? data['weight'] : '',
       age: data.containsKey('age') ? data['age'] : '',
@@ -26,9 +25,9 @@ class ProfileCubit extends Cubit<ProfileState> {
     ));
   }
 
-  void usernameChanged(String username) {
+  void durationChanged(String duration) {
     emit(state.copywith(
-      username: username,
+      duration: duration,
       status: ProfileStatus.initial,
     ));
   }
@@ -41,7 +40,6 @@ class ProfileCubit extends Cubit<ProfileState> {
   }
 
   void weightChanged(String weight) {
-    print('weight is ' + weight);
     emit(state.copywith(
       weight: weight,
       status: ProfileStatus.initial,
@@ -61,9 +59,9 @@ class ProfileCubit extends Cubit<ProfileState> {
 
     try {
       print(state);
-      _dataRepository.updateProfile(
+      _profileRepository.updateProfile(
           id: _authRepository.currentUser.id,
-          username: state.username,
+          duration: state.duration,
           height: state.height,
           weight: state.weight,
           age: state.age);

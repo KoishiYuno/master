@@ -1,15 +1,12 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:master/repository/auth_repository.dart';
-import 'package:master/repository/data_repository.dart';
 
 part 'signup_state.dart';
 
 class SignupCubit extends Cubit<SignupState> {
-  final DataRepository _dataRepository;
   final AuthRepository _authRepository;
-  SignupCubit(this._authRepository, this._dataRepository)
-      : super(SignupState.initial());
+  SignupCubit(this._authRepository) : super(SignupState.initial());
 
   void emailChanged(String email) {
     emit(state.copywith(
@@ -49,7 +46,7 @@ class SignupCubit extends Cubit<SignupState> {
           .signUp(email: state.email, password: state.password)
           .then((value) => null);
 
-      await _dataRepository.createNewUser(
+      await _authRepository.createNewUser(
           id: _authRepository.currentUser.id,
           username: state.username,
           userType: state.userType);

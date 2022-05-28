@@ -7,7 +7,7 @@ import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 import 'package:master/repository/auth_repository.dart';
-import 'package:master/repository/data_repository.dart';
+import 'package:master/repository/home_repository.dart';
 import 'package:flutter_webview_plugin/flutter_webview_plugin.dart';
 import 'package:crypto/crypto.dart';
 import 'package:master/repository/fitbit_repository.dart';
@@ -16,15 +16,15 @@ part 'home_event.dart';
 part 'home_state.dart';
 
 class HomeBloc extends Bloc<HomeEvent, HomeState> {
-  final DataRepository _dataRepository;
+  final HomeRepository _homeRepository;
   final AuthRepository _authRepository;
   final FitbitRepository _fitbitRepository;
 
   HomeBloc({
-    required DataRepository dataRepository,
+    required HomeRepository dataRepository,
     required AuthRepository authRepository,
     required FitbitRepository fitbitRepository,
-  })  : _dataRepository = dataRepository,
+  })  : _homeRepository = dataRepository,
         _authRepository = authRepository,
         _fitbitRepository = fitbitRepository,
         super(HomeInitial()) {
@@ -38,7 +38,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     Emitter<HomeState> emit,
   ) async {
     try {
-      final data = await _dataRepository.getElderlyDetail(
+      final data = await _homeRepository.getElderlyDetail(
           userid: _authRepository.currentUser.id);
 
       if (data.data()!['userType'] == 'Elderly') {
@@ -67,7 +67,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     Emitter<HomeState> emit,
   ) async {
     String access_token = '';
-    final userDetail = await _dataRepository.getElderlyDetail(
+    final userDetail = await _homeRepository.getElderlyDetail(
         userid: _authRepository.currentUser.id);
 
     final current = DateTime.now();
@@ -88,7 +88,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
             await _fitbitRepository.getAccessTokenByRefreshToken(
                 refreshToken: userDetail.data()!['refresh_token']);
 
-        await _dataRepository.updateFitbitAccessToken(
+        await _homeRepository.updateFitbitAccessToken(
           id: _authRepository.currentUser.id,
           accessToken: credentialMap['access_token'],
           refreshToken: credentialMap['refresh_token'],
@@ -120,7 +120,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       lastHeartRate = [formatterTime.format(current), 0];
     }
 
-    await _dataRepository.createNewHeartRateRecord(
+    await _homeRepository.createNewHeartRateRecord(
       data: lastHeartRate,
       date: formatterDate.format(current),
       id: _authRepository.currentUser.id,
@@ -178,7 +178,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
 
     try {
       if (fitbitCredentials.containsKey('access_token')) {
-        await _dataRepository.storeFitbitCredentials(
+        await _homeRepository.storeFitbitCredentials(
             id: _authRepository.currentUser.id,
             fitbitCredentials: fitbitCredentials);
         flutterWebViewPlugin.close();

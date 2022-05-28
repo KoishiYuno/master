@@ -4,21 +4,21 @@ import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:master/repository/auth_repository.dart';
 
-import '../../repository/data_repository.dart';
+import '../../repository/home_repository.dart';
 
 part 'health_data_event.dart';
 part 'health_data_state.dart';
 
 class HealthDataBloc extends Bloc<HealthDataEvent, HealthDataState> {
-  final DataRepository _dataRepository;
+  final HomeRepository _homeRepository;
   final AuthRepository _authRepository;
 
   StreamSubscription? _healthDataSubscription;
 
   HealthDataBloc({
-    required DataRepository dataRepository,
+    required HomeRepository homeRepository,
     required AuthRepository authRepository,
-  })  : _dataRepository = dataRepository,
+  })  : _homeRepository = homeRepository,
         _authRepository = authRepository,
         super(HealthDataInitial()) {
     on<LoadHealthData>(_onLoadHealthData);
@@ -30,7 +30,7 @@ class HealthDataBloc extends Bloc<HealthDataEvent, HealthDataState> {
   ) async {
     print(111111222);
     _healthDataSubscription?.cancel();
-    _healthDataSubscription = _dataRepository
+    _healthDataSubscription = _homeRepository
         .getHeartRate(
             userid: _authRepository.currentUser.id, date: '21-04-2022')
         .listen((healthData) {

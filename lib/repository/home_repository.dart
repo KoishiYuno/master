@@ -1,38 +1,12 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 
-class DataRepository {
+class HomeRepository {
   final FirebaseFirestore _firebaseFirestore;
 
-  DataRepository({
+  HomeRepository({
     FirebaseFirestore? firebaseFirestore,
   }) : _firebaseFirestore = firebaseFirestore ?? FirebaseFirestore.instance;
-
-  Future<void> createNewUser({
-    required String id,
-    required String username,
-    required String userType,
-  }) async {
-    String token = '';
-    await FirebaseMessaging.instance.getToken().then((value) {
-      token = value!;
-    });
-
-    if (userType == 'Elderly') {
-      await _firebaseFirestore.collection('users').doc(id).set({
-        'username': username,
-        'registration_token': [token],
-        'userType': userType,
-        'linked_account': []
-      });
-    } else {
-      await _firebaseFirestore.collection('users').doc(id).set({
-        'username': username,
-        'registration_token': [token],
-        'userType': userType,
-      });
-    }
-  }
 
   Future<DocumentSnapshot<Map<String, dynamic>>> getElderlyDetail({
     required String userid,
@@ -48,17 +22,6 @@ class DataRepository {
 
     await FirebaseFirestore.instance.collection('users').doc(userid).update({
       'registration_token': FieldValue.arrayRemove([token]),
-    });
-  }
-
-  Future<void> addRegistrationToken({required String userid}) async {
-    var token;
-    await FirebaseMessaging.instance.getToken().then((value) {
-      token = value!;
-    });
-
-    await FirebaseFirestore.instance.collection('users').doc(userid).update({
-      'registration_token': FieldValue.arrayUnion([token]),
     });
   }
 
@@ -145,58 +108,6 @@ class DataRepository {
     }
   }
 
-  Future<void> updateProfile({
-    required String id,
-    required String username,
-    required String height,
-    required String weight,
-    required String age,
-  }) async {
-    await _firebaseFirestore.collection('users').doc(id).set({
-      'username': username,
-      'height': height,
-      'weight': weight,
-      'age': age,
-    }, SetOptions(merge: true));
-  }
-
-  Future<void> createNewMessage({
-    required String username,
-    required String message,
-    required String id,
-    required String docID,
-  }) async {
-    try {
-      final current = DateTime.now();
-
-      final response = await _firebaseFirestore
-          .collection('users')
-          .doc(docID)
-          .collection('messages')
-          .orderBy("date", descending: true)
-          .limit(1)
-          .get();
-
-      String newId = response.docs.isEmpty
-          ? '0'
-          : (int.parse(response.docs[0].id) + 1).toString();
-
-      _firebaseFirestore
-          .collection('users')
-          .doc(docID)
-          .collection('messages')
-          .doc(newId)
-          .set({
-        'message': message,
-        'date': DateTime.now(),
-        'userID': id,
-        'username': username,
-      });
-    } catch (e) {
-      throw Exception(e.toString());
-    }
-  }
-
   Future<String> linkElderly({
     required String code,
     required String userId,
@@ -226,7 +137,19 @@ class DataRepository {
           .doc(userId)
           .set({'elderly': response.docs[0].id}, SetOptions(merge: true));
 
-      return '';
+      var token;
+      await FirebaseMessaging.instance.getToken().then((value) {
+        token = value!;
+      });
+
+      await _firebaseFirestore
+          .collection('users')
+          .doc(response.docs[0].id)
+          .update({
+        'registration_token': FieldValue.arrayUnion([token]),
+      });
+
+      return response.docs[0].id;
     } catch (e) {
       throw Exception(e.toString());
     }

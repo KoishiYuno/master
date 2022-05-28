@@ -1,11 +1,12 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:master/bloc/auth-bloc/auth_bloc.dart';
 import 'package:master/repository/auth_repository.dart';
 import 'package:master/widgets/bottom_nav_bar.dart';
 
 import '../cubits/profile-cubit/profile_cubit.dart';
-import '../repository/data_repository.dart';
+import '../repository/profile_repository.dart';
 
 class ProfileScreen extends StatelessWidget {
   final FirebaseFirestore _firebaseFirestore = FirebaseFirestore.instance;
@@ -18,13 +19,13 @@ class ProfileScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Chat'),
+        title: const Text('Profile'),
         automaticallyImplyLeading: false,
       ),
       body: FutureBuilder(
         future: _firebaseFirestore
             .collection('users')
-            .doc(context.read<AuthRepository>().currentUser.id)
+            .doc(context.read<AuthBloc>().state.targetID)
             .get(),
         builder:
             (BuildContext context, AsyncSnapshot<DocumentSnapshot> snapshot) {
@@ -36,7 +37,7 @@ class ProfileScreen extends StatelessWidget {
                 snapshot.data!.data() as Map<String, dynamic>;
             return BlocProvider(
               create: (context) => ProfileCubit(
-                context.read<DataRepository>(),
+                context.read<ProfileRepository>(),
                 context.read<AuthRepository>(),
               )..setIntial(data),
               child: BlocListener<ProfileCubit, ProfileState>(
@@ -80,22 +81,22 @@ class _ProfileView extends StatelessWidget {
             },
             child: ListView(
               children: <Widget>[
-                const LabelText(label: 'username'),
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 15.0),
-                  child: TextFormField(
-                    initialValue: state.username,
-                    keyboardType: TextInputType.number,
-                    decoration: const InputDecoration(
-                      contentPadding: EdgeInsets.only(left: 10),
-                      floatingLabelBehavior: FloatingLabelBehavior.always,
-                    ),
-                    onChanged: (username) {
-                      context.read<ProfileCubit>().usernameChanged(username);
-                    },
-                  ),
-                ),
-                const LabelText(label: 'height (cm)'),
+                // const LabelText(label: 'duration'),
+                // Padding(
+                //   padding: const EdgeInsets.only(bottom: 15.0),
+                //   child: TextFormField(
+                //     initialValue: state.duration,
+                //     keyboardType: TextInputType.number,
+                //     decoration: const InputDecoration(
+                //       contentPadding: EdgeInsets.only(left: 10),
+                //       floatingLabelBehavior: FloatingLabelBehavior.always,
+                //     ),
+                //     onChanged: (duration) {
+                //       context.read<ProfileCubit>().durationChanged(duration);
+                //     },
+                //   ),
+                // ),
+                const LabelText(label: 'Height (cm)'),
                 Padding(
                   padding: const EdgeInsets.only(bottom: 15.0),
                   child: TextFormField(
@@ -110,7 +111,7 @@ class _ProfileView extends StatelessWidget {
                     },
                   ),
                 ),
-                const LabelText(label: 'weight (kg)'),
+                const LabelText(label: 'Weight (kg)'),
                 Padding(
                   padding: const EdgeInsets.only(bottom: 15.0),
                   child: TextFormField(
@@ -126,7 +127,7 @@ class _ProfileView extends StatelessWidget {
                     },
                   ),
                 ),
-                const LabelText(label: 'age'),
+                const LabelText(label: 'Age'),
                 Padding(
                   padding: const EdgeInsets.only(bottom: 15.0),
                   child: TextFormField(
@@ -138,6 +139,21 @@ class _ProfileView extends StatelessWidget {
                     ),
                     onChanged: (age) {
                       context.read<ProfileCubit>().ageChanged(age);
+                    },
+                  ),
+                ),
+                const LabelText(label: 'Duration of Illness'),
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 15.0),
+                  child: TextFormField(
+                    initialValue: state.duration,
+                    keyboardType: TextInputType.number,
+                    decoration: const InputDecoration(
+                      contentPadding: EdgeInsets.only(left: 10),
+                      floatingLabelBehavior: FloatingLabelBehavior.always,
+                    ),
+                    onChanged: (duration) {
+                      context.read<ProfileCubit>().durationChanged(duration);
                     },
                   ),
                 ),

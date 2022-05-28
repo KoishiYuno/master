@@ -35,7 +35,7 @@ class _MessageBubbleState extends State<MessageBubble> {
                 padding: widget.isMe
                     ? const EdgeInsets.only(right: 8.0)
                     : const EdgeInsets.only(left: 8.0),
-                child: Text(widget.username),
+                child: Text('${widget.username} at ${widget.date}'),
               ),
               Container(
                 constraints: BoxConstraints(
@@ -64,12 +64,12 @@ class _MessageBubbleState extends State<MessageBubble> {
                   ),
                 ),
               ),
-              Container(
-                padding: widget.isMe
-                    ? const EdgeInsets.only(right: 8.0)
-                    : const EdgeInsets.only(left: 8.0),
-                child: Text(widget.date),
-              ),
+              // Container(
+              //   padding: widget.isMe
+              //       ? const EdgeInsets.only(right: 8.0)
+              //       : const EdgeInsets.only(left: 8.0),
+              //   child: Text(),
+              // ),
             ],
           ),
         ),

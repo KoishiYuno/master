@@ -5,6 +5,7 @@ import 'package:master/cubits/chat-cubit/chat_cubit.dart';
 import 'package:master/widgets/chat-widgets/view.dart';
 import 'package:intl/intl.dart';
 
+import '../../bloc/auth-bloc/auth_bloc.dart';
 import '../../repository/auth_repository.dart';
 
 class Message extends StatelessWidget {
@@ -20,7 +21,7 @@ class Message extends StatelessWidget {
         return StreamBuilder(
           stream: _firebaseFirestore
               .collection('users')
-              .doc(context.read<AuthRepository>().currentUser.id)
+              .doc(context.read<AuthBloc>().state.targetID)
               .collection('messages')
               .orderBy('date', descending: true)
               .snapshots(),
@@ -41,7 +42,8 @@ class Message extends StatelessWidget {
                   itemBuilder: (context, index) {
                     return MessageBubble(
                         message: data[index]['message'],
-                        date: DateFormat('dd/MM/yyyy, HH:mm')
+                        // dd/MM/yyyy,
+                        date: DateFormat('HH:mm')
                             .format(data[index]['date'].toDate()),
                         isMe: data[index]['userID'] ==
                             context.read<AuthRepository>().currentUser.id,

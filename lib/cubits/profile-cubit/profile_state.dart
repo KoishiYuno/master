@@ -3,7 +3,7 @@ part of 'profile_cubit.dart';
 enum ProfileStatus { initial, submitting, success, error }
 
 class ProfileState extends Equatable {
-  final String username;
+  final String duration;
   final String weight;
   final String height;
   final String age;
@@ -15,14 +15,13 @@ class ProfileState extends Equatable {
     required this.error,
     required this.status,
     required this.height,
-    required this.username,
+    required this.duration,
     required this.age,
   });
 
   factory ProfileState.initial() {
-    print('initial');
     return const ProfileState(
-      username: '',
+      duration: '',
       weight: '',
       error: '',
       age: '',
@@ -32,13 +31,13 @@ class ProfileState extends Equatable {
   }
 
   @override
-  List<Object> get props => [username, height, weight, status, age, error];
+  List<Object> get props => [duration, height, weight, status, age, error];
 
   ProfileState copywith({
     String? height,
     String? error,
     String? weight,
-    String? username,
+    String? duration,
     String? age,
     ProfileStatus? status,
   }) {
@@ -47,7 +46,7 @@ class ProfileState extends Equatable {
       error: error ?? this.error,
       status: status ?? this.status,
       weight: weight ?? this.weight,
-      username: username ?? this.username,
+      duration: duration ?? this.duration,
       age: age ?? this.age,
     );
   }

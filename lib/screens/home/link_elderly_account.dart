@@ -6,7 +6,7 @@ import 'package:pin_code_fields/pin_code_fields.dart';
 
 import '../../bloc/auth-bloc/auth_bloc.dart';
 import '../../repository/auth_repository.dart';
-import '../../repository/data_repository.dart';
+import '../../repository/home_repository.dart';
 
 class LinkElderlyAccount extends StatelessWidget {
   LinkElderlyAccount({Key? key}) : super(key: key);
@@ -17,7 +17,7 @@ class LinkElderlyAccount extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (context) => LinkElderlyCubit(
-        context.read<DataRepository>(),
+        context.read<HomeRepository>(),
         context.read<AuthRepository>(),
       ),
       child: BlocBuilder<HomeBloc, HomeState>(
@@ -29,6 +29,7 @@ class LinkElderlyAccount extends StatelessWidget {
                     .showSnackBar(SnackBar(content: Text(state.error)));
               }
               if (state.status == LinkElderlyStatus.success) {
+                context.read<AuthBloc>().add(TargetIdUpdated());
                 context.read<HomeBloc>().emit(ElderlyAccountLinked());
               }
             },

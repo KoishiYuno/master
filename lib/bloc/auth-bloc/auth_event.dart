@@ -18,6 +18,8 @@ class UserChanged extends AuthEvent {
   List<Object> get props => [];
 }
 
+class TargetIdUpdated extends AuthEvent {}
+
 class HomeNavigationequested extends AuthEvent {}
 
 class ChatNavigationequested extends AuthEvent {}

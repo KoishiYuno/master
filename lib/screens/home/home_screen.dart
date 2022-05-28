@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:master/bloc/home-bloc/home_bloc.dart';
-import 'package:master/repository/data_repository.dart';
+import 'package:master/repository/home_repository.dart';
 import 'package:master/repository/fitbit_repository.dart';
 import 'package:master/screens/home/fitbit_authorization.dart';
 import 'package:master/screens/home/home_main.dart';
@@ -27,7 +27,7 @@ class HomeScreen extends StatelessWidget {
     return BlocProvider(
       create: (context) => HomeBloc(
         authRepository: context.read<AuthRepository>(),
-        dataRepository: context.read<DataRepository>(),
+        dataRepository: context.read<HomeRepository>(),
         fitbitRepository: context.read<FitbitRepository>(),
       )..add(CheckFitbitAccessToken()),
       child: const _HomeView(),

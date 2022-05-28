@@ -2,7 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../repository/auth_repository.dart';
+import '../../bloc/auth-bloc/auth_bloc.dart';
 import 'draw_plot.dart';
 
 class HeartRateDiagram extends StatelessWidget {
@@ -22,7 +22,7 @@ class HeartRateDiagram extends StatelessWidget {
     return StreamBuilder(
         stream: _firebaseFirestore
             .collection('users')
-            .doc(context.read<AuthRepository>().currentUser.id)
+            .doc(context.read<AuthBloc>().state.targetID)
             .collection('healthData')
             .doc(date)
             .snapshots(),
@@ -32,8 +32,7 @@ class HeartRateDiagram extends StatelessWidget {
           } else if (snapshot.connectionState == ConnectionState.active) {
             final data = snapshot.data.data();
             if (data == null) {
-              return const Center(
-                  child: Text('No Heart Rate Records Avaliable'));
+              return const Center();
             } else {
               return DrawPlot(
                 data: data,
@@ -41,9 +40,7 @@ class HeartRateDiagram extends StatelessWidget {
               );
             }
           } else {
-            return const Center(
-              child: CircularProgressIndicator(),
-            );
+            return Container();
           }
         });
   }

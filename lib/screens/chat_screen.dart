@@ -4,7 +4,7 @@ import 'package:master/widgets/bottom_nav_bar.dart';
 
 import '../cubits/chat-cubit/chat_cubit.dart';
 import '../repository/auth_repository.dart';
-import '../repository/data_repository.dart';
+import '../repository/chat_repository.dart';
 import '../widgets/chat-widgets/view.dart';
 
 class ChatScreen extends StatelessWidget {
@@ -21,7 +21,7 @@ class ChatScreen extends StatelessWidget {
       ),
       body: BlocProvider<ChatCubit>(
         create: (_) => ChatCubit(
-          context.read<DataRepository>(),
+          context.read<ChatRepository>(),
           context.read<AuthRepository>(),
         ),
         child: BlocListener<ChatCubit, ChatState>(
@@ -31,7 +31,7 @@ class ChatScreen extends StatelessWidget {
                   .showSnackBar(SnackBar(content: Text(state.error)));
             }
           },
-          child: _ChatView(),
+          child: const _ChatView(),
         ),
       ),
       bottomNavigationBar: const CustomBottomNavBar(),

@@ -2,7 +2,6 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:master/repository/data_repository.dart';
 
 import '../cubits/signup-cubit/signup_cubit.dart';
 import '../repository/auth_repository.dart';
@@ -27,12 +26,14 @@ class _SignupScreenState extends State<SignupScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Signup'),
+        automaticallyImplyLeading: false,
       ),
       body: Padding(
         padding: const EdgeInsets.all(20.0),
         child: BlocProvider<SignupCubit>(
           create: (_) => SignupCubit(
-              context.read<AuthRepository>(), context.read<DataRepository>()),
+            context.read<AuthRepository>(),
+          ),
           child: BlocListener<SignupCubit, SignupState>(
             listener: (context, state) {
               if (state.status == SignupStatus.error) {
@@ -62,7 +63,7 @@ class _SignupForm extends StatelessWidget {
     return Form(
       key: _signupFormKey,
       child: Align(
-        alignment: const Alignment(0, -1 / 1),
+        alignment: const Alignment(0, 0 / 1),
         child: SingleChildScrollView(
           child: Column(
             mainAxisSize: MainAxisSize.min,

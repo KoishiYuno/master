@@ -1,16 +1,16 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:master/repository/auth_repository.dart';
-import 'package:master/repository/data_repository.dart';
+import 'package:master/repository/chat_repository.dart';
 
 part 'chat_state.dart';
 
 class ChatCubit extends Cubit<ChatState> {
-  final DataRepository _dataRepository;
+  final ChatRepository _chatRepository;
   final AuthRepository _authRepository;
 
   ChatCubit(
-    this._dataRepository,
+    this._chatRepository,
     this._authRepository,
   ) : super(ChatState.initial());
 
@@ -22,7 +22,7 @@ class ChatCubit extends Cubit<ChatState> {
   }
 
   Future<void> checkdocID() async {
-    final response = await _dataRepository.getElderlyDetail(
+    final response = await _chatRepository.getElderlyDetail(
         userid: _authRepository.currentUser.id);
 
     String docID = response.data()!.containsKey('elderly')
@@ -47,7 +47,7 @@ class ChatCubit extends Cubit<ChatState> {
 
       print(state);
 
-      await _dataRepository.createNewMessage(
+      await _chatRepository.createNewMessage(
           message: state.message,
           id: _authRepository.currentUser.id,
           username: state.username,

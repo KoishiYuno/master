@@ -4,7 +4,8 @@ import 'package:master/screens/chat_screen.dart';
 import 'package:master/screens/home/home_screen.dart';
 import 'package:master/screens/login_screen.dart';
 import 'package:master/screens/profile_screen.dart';
-import 'package:master/screens/splash_screen.dart';
+
+import '../screens/menu_screen.dart';
 
 List<Page> onGenerateAppViewPages(
   // NavigationStatus navState,
@@ -23,6 +24,6 @@ List<Page> onGenerateAppViewPages(
     case AuthStatus.chat:
       return [ChatScreen.page()];
     case AuthStatus.menu:
-      return [SplashScreen.page()];
+      return [MenuScreen.page()];
   }
 }

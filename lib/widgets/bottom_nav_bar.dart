@@ -32,6 +32,7 @@ class CustomBottomNavBar extends StatelessWidget {
                     tooltip: 'Profile',
                     icon: Icon(Icons.person),
                     onPressed: () {
+                      context.read<AuthBloc>().state.user;
                       context.read<AuthBloc>().add(ProfileNavigationequested());
                     },
                   ),

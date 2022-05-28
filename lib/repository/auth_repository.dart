@@ -1,13 +1,18 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart' as firebase_auth;
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:master/model/user.dart';
-import 'package:master/repository/data_repository.dart';
 
 class AuthRepository {
+  final FirebaseFirestore _firebaseFirestore;
   final firebase_auth.FirebaseAuth _firebaseAuth;
 
-  AuthRepository({firebase_auth.FirebaseAuth? firebaseAuth})
-      : _firebaseAuth = firebaseAuth ?? firebase_auth.FirebaseAuth.instance;
+  AuthRepository({
+    firebase_auth.FirebaseAuth? firebaseAuth,
+    FirebaseFirestore? firebaseFirestore,
+  })  : _firebaseAuth = firebaseAuth ?? firebase_auth.FirebaseAuth.instance,
+        _firebaseFirestore = firebaseFirestore ?? FirebaseFirestore.instance;
 
   var currentUser = User.empty;
   var targetId = '';
@@ -99,6 +104,44 @@ class AuthRepository {
       await Future.wait([_firebaseAuth.signOut()]);
     } catch (e) {
       throw Exception(e);
+    }
+  }
+
+  Future<void> addRegistrationToken({required String userid}) async {
+    // ignore: prefer_typing_uninitialized_variables
+    var token;
+    await FirebaseMessaging.instance.getToken().then((value) {
+      token = value!;
+    });
+
+    await _firebaseFirestore.collection('users').doc(userid).update({
+      'registration_token': FieldValue.arrayUnion([token]),
+    });
+  }
+
+  Future<void> createNewUser({
+    required String id,
+    required String username,
+    required String userType,
+  }) async {
+    String token = '';
+    await FirebaseMessaging.instance.getToken().then((value) {
+      token = value!;
+    });
+
+    if (userType == 'Elderly') {
+      await _firebaseFirestore.collection('users').doc(id).set({
+        'username': username,
+        'registration_token': [token],
+        'userType': userType,
+        'linked_account': []
+      });
+    } else {
+      await _firebaseFirestore.collection('users').doc(id).set({
+        'username': username,
+        'registration_token': [token],
+        'userType': userType,
+      });
     }
   }
 }

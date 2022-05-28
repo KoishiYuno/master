@@ -5,10 +5,13 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:master/bloc/auth-bloc/auth_bloc.dart';
 import 'package:master/config/theme.dart';
 import 'package:master/repository/auth_repository.dart';
-import 'package:master/repository/data_repository.dart';
+import 'package:master/repository/chat_repository.dart';
+import 'package:master/repository/home_repository.dart';
 import 'package:master/repository/fitbit_repository.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:master/repository/link_code_repository.dart';
+import 'package:master/repository/profile_repository.dart';
 
 import 'config/routes.dart';
 
@@ -32,8 +35,11 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
   final AuthRepository authRepository = AuthRepository();
-  final DataRepository dataRepository = DataRepository();
+  final HomeRepository homeRepository = HomeRepository();
   final FitbitRepository fitbitRepository = FitbitRepository();
+  final ChatRepository chatRepository = ChatRepository();
+  final ProfileRepository profileRepository = ProfileRepository();
+  final LinkCodeRepository linkCodeRepository = LinkCodeRepository();
 
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
 
@@ -50,24 +56,36 @@ Future<void> main() async {
 
   runApp(MyApp(
     authRepository: authRepository,
-    dataRepository: dataRepository,
+    homeRepository: homeRepository,
     fitbitRepository: fitbitRepository,
+    chatRepository: chatRepository,
+    profileRepository: profileRepository,
+    linkCodeRepository: linkCodeRepository,
   ));
 }
 
 class MyApp extends StatefulWidget {
   final AuthRepository _authRepository;
-  final DataRepository _dataRepository;
+  final HomeRepository _homeRepository;
   final FitbitRepository _fitbitRepository;
+  final ChatRepository _chatRepository;
+  final ProfileRepository _profileRepository;
+  final LinkCodeRepository _linkCodeRepository;
 
   const MyApp({
     Key? key,
-    required DataRepository dataRepository,
+    required HomeRepository homeRepository,
     required AuthRepository authRepository,
     required FitbitRepository fitbitRepository,
-  })  : _dataRepository = dataRepository,
+    required ChatRepository chatRepository,
+    required ProfileRepository profileRepository,
+    required LinkCodeRepository linkCodeRepository,
+  })  : _homeRepository = homeRepository,
         _authRepository = authRepository,
         _fitbitRepository = fitbitRepository,
+        _chatRepository = chatRepository,
+        _profileRepository = profileRepository,
+        _linkCodeRepository = linkCodeRepository,
         super(key: key);
   @override
   _MyAppState createState() => _MyAppState();
@@ -113,14 +131,24 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
     return RepositoryProvider.value(
       value: widget._authRepository,
       child: RepositoryProvider.value(
-        value: widget._dataRepository,
+        value: widget._homeRepository,
         child: RepositoryProvider.value(
           value: widget._fitbitRepository,
-          child: BlocProvider(
-            create: (_) => AuthBloc(
-                authRepository: widget._authRepository,
-                dataRepository: widget._dataRepository),
-            child: const AppView(),
+          child: RepositoryProvider.value(
+            value: widget._chatRepository,
+            child: RepositoryProvider.value(
+              value: widget._profileRepository,
+              child: RepositoryProvider.value(
+                value: widget._linkCodeRepository,
+                child: BlocProvider(
+                  create: (_) => AuthBloc(
+                      authRepository: widget._authRepository,
+                      homeRepository: widget._homeRepository,
+                      targetID: ''),
+                  child: const AppView(),
+                ),
+              ),
+            ),
           ),
         ),
       ),
@@ -128,49 +156,23 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
   }
 }
 
-// class MyApp extends StatelessWidget {
-//   final AuthRepository _authRepository;
-//   final DataRepository _dataRepository;
-//   final FitbitRepository _fitbitRepository;
-
-//   const MyApp({
-//     Key? key,
-//     required DataRepository dataRepository,
-//     required AuthRepository authRepository,
-//     required FitbitRepository fitbitRepository,
-//   })  : _dataRepository = dataRepository,
-//         _authRepository = authRepository,
-//         _fitbitRepository = fitbitRepository,
-//         super(key: key);
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return RepositoryProvider.value(
-//       value: _authRepository,
-//       child: RepositoryProvider.value(
-//         value: _dataRepository,
-//         child: RepositoryProvider.value(
-//           value: _fitbitRepository,
-//           child: BlocProvider(
-//             create: (_) => AuthBloc(authRepository: _authRepository),
-//             child: const AppView(),
-//           ),
-//         ),
-//       ),
-//     );
-//   }
-// }
-
 class AppView extends StatelessWidget {
   const AppView({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      theme: theme,
-      home: FlowBuilder(
-          state: context.select((AuthBloc bloc) => bloc.state.status),
-          onGeneratePages: onGenerateAppViewPages),
+    return BlocBuilder<AuthBloc, AuthState>(
+      builder: (context, state) {
+        if (state.status == AuthStatus.authenticated && state.targetID == '') {
+          context.read<AuthBloc>().add(TargetIdUpdated());
+        }
+        return MaterialApp(
+          theme: theme,
+          home: FlowBuilder(
+              state: context.select((AuthBloc bloc) => bloc.state.status),
+              onGeneratePages: onGenerateAppViewPages),
+        );
+      },
     );
   }
 }
