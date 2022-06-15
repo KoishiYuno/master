@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="default_web_client_id" translatable="false">771443041837-5jat5o17cb26t62hmhfsp6vco8fh7gkp.apps.googleusercontent.com</string>
+    <string name="gcm_defaultSenderId" translatable="false">771443041837</string>
+    <string name="google_api_key" translatable="false">AIzaSyAMX70XiOANYtgV-PIzy6w811MpgBZmuk0</string>
+    <string name="google_app_id" translatable="false">1:771443041837:android:4b87f9bd7ad2379e9a3aa4</string>
+    <string name="google_crash_reporting_api_key" translatable="false">AIzaSyAMX70XiOANYtgV-PIzy6w811MpgBZmuk0</string>
+    <string name="google_storage_bucket" translatable="false">smart-elderly-care.appspot.com</string>
+    <string name="project_id" translatable="false">smart-elderly-care</string>
+</resources>
